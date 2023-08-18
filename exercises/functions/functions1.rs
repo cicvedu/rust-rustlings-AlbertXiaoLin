@@ -3,8 +3,11 @@
 // Execute `rustlings hint functions1` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
+
+fn quitcall_me() {
+    
+}
 fn main() {
-    call_me();
+    quitcall_me();
 }
