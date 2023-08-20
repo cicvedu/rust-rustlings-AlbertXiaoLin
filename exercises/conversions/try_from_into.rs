@@ -27,7 +27,7 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
+
 
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
@@ -38,9 +38,17 @@ enum IntoColorError {
 // that correct RGB color values must be integers in the 0..=255 range.
 
 // Tuple implementation
+//impl TryFrom<(i16, i16, i16)> for Color {
+   // type Error = IntoColorError;
+   // fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+   // }
+//}
+// Tuple implementation
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (r, g, b) = tuple;
+        Color::try_from([r, g, b])
     }
 }
 
@@ -48,6 +56,7 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        Color::try_from(&arr[..])
     }
 }
 
@@ -55,8 +64,36 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+        let u8_range = 0..256;
+        for element in slice {
+            if !u8_range.contains(element) {
+                return Err(IntoColorError::IntConversion);
+            }
+        }
+        Ok(Color {
+            red: slice[0] as u8,
+            green: slice[1] as u8,
+            blue: slice[2] as u8,
+        })
     }
 }
+
+// Array implementation
+//impl TryFrom<[i16; 3]> for Color {
+ //   type Error = IntoColorError;
+//    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+ //   }
+//}
+
+// Slice implementation
+//impl TryFrom<&[i16]> for Color {
+ //   type Error = IntoColorError;
+  //  fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+  //  }
+//}
 
 fn main() {
     // Use the `try_from` function

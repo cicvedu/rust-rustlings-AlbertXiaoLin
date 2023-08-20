@@ -1,4 +1,4 @@
-// from_str.rs
+//// from_str.rs
 //
 // This is similar to from_into.rs, but this time we'll implement `FromStr` and
 // return errors instead of falling back to a default value. Additionally, upon
@@ -31,7 +31,7 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
+
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -49,11 +49,39 @@ enum ParsePersonError {
 // you want to return a string error message, you can do so via just using
 // return `Err("my error message".into())`.
 
+//impl FromStr for Person {
+    //type Err = ParsePersonError;
+    //fn from_str(s: &str) -> Result<Person, Self::Err> {
+    //}
+//}
+
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        // 当字符串为空返回错误
+        if s.is_empty() {
+            return Err(ParsePersonError::Empty);
+        }
+
+        // 字符串分割
+        let splitted: Vec<&str> = s.split(",").collect();
+        match &splitted[..] {
+            // 名字为空，返回错误
+            &[name, _] if name.is_empty() => Err(ParsePersonError::NoName),
+            // 年龄不正确返回错误
+            &[name, age_str] => match age_str.parse::<usize>() {
+                Ok(age) => Ok(Person {
+                    name: name.to_string(),
+                    age: age,
+                }),
+                Err(err) => Err(ParsePersonError::ParseInt(err)),
+            },
+            // 元素数量不匹配
+            _ => Err(ParsePersonError::BadLen),
+        }
     }
 }
+
 
 fn main() {
     let p = "Mark,20".parse::<Person>().unwrap();

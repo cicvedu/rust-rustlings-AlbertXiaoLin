@@ -40,10 +40,33 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of
 // Person Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
 
+
+//impl From<&str> for Person {
+   // fn from(s: &str) -> Person {
+        
+  //  }
+//}
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        // 当字符串为空返回默认
+        if s.is_empty() {
+            return Default::default();
+        }
+        match s.split_once(",") {
+            // 当name为空，返回默认
+            Some((name, _)) if name.is_empty() => Default::default(),
+            Some((name, age_str)) => match age_str.parse::<usize>() {
+                Ok(age) => Person {
+                    name: name.to_string(),
+                    age: age,
+                },
+                // 当age解析失败返回默认
+                Err(_) => Default::default(),
+            },
+            // 当分割不正确，返回默认
+            None => Default::default(),
+        }
     }
 }
 
